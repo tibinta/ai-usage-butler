@@ -1,0 +1,29 @@
+.build/
+dist/
+.DS_Store
+
+# Local credentials, signing material, and logs
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.crt
+*.mobileprovision
+*.provisionprofile
+*.log
+logs/
+
+# Local assistant instructions and private working notes
+AGENTS.md
+CLAUDE.md
+.codex/
+.claude/
+.secrets/
+private/
+notes/
+*.xcuserstate
+xcuserdata/
