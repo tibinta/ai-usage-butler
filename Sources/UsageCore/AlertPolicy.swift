@@ -2,8 +2,9 @@ import Foundation
 
 public enum CacheIdentity {
     public static func matches(stored: String?, current: String) -> Bool { stored != nil && stored == current }
-    public static func cacheIsFresh(stored: String?, current: String, fetchedAt: Date?, now: Date) -> Bool {
+    public static func cacheIsFresh(stored: String?, current: String, fetchedAt: Date?, resetAt: Date? = nil, now: Date) -> Bool {
         guard matches(stored: stored, current: current), let fetchedAt else { return false }
+        if let resetAt, resetAt <= now { return false }
         let age = now.timeIntervalSince(fetchedAt)
         return age >= 0 && age < 300
     }

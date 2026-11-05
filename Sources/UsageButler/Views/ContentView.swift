@@ -111,7 +111,10 @@ private struct InactiveProvider: View {
             VStack(alignment: .leading, spacing: 5) {
                 if let message = provider.message { Text(message) }
                 if provider.name == "Claude", provider.fetchedAt == nil { Button("Connect Claude") { connectClaude() } }
-                if let session = provider.session { Text("Session: \(amount(session.remaining)) left · resets \(session.reset.formatted(date: .abbreviated, time: .shortened))") }
+                if let session = provider.session {
+                    Text(session.reset <= Date() ? "Session reset passed · awaiting updated usage" :
+                         "Session: \(amount(session.remaining)) left · resets \(session.reset.formatted(date: .abbreviated, time: .shortened))")
+                }
             }.font(.system(size: 10)).padding(.top, 5).frame(maxWidth: .infinity, alignment: .leading)
         } label: {
             if let weekly = provider.weekly, weekly.remaining <= 1, weekly.reset > Date(), provider.fetchedAt.map({ Date().timeIntervalSince($0) <= 900 }) == true {

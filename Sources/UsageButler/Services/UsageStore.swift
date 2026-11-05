@@ -16,7 +16,13 @@ import UserNotifications
             Task { @MainActor in
                 guard let self else { return }
                 self.objectWillChange.send()
-                if Date().timeIntervalSince(self.lastRefresh) >= 300 { self.refresh() }
+                let now = Date()
+                let crossedReset = self.providers.contains { provider in
+                    [provider.weekly, provider.session].compactMap { $0 }.contains {
+                        $0.reset > self.lastRefresh && $0.reset <= now
+                    }
+                }
+                if crossedReset || now.timeIntervalSince(self.lastRefresh) >= 300 { self.refresh() }
             }
         }
         refresh()

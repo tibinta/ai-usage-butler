@@ -18,6 +18,10 @@ public enum UsageReader {
                 return ProviderUsage(name: "Codex", weekly: nil, session: nil, fetchedAt: nil, message: "Could not read Codex usage. Check that Codex is signed in.")
             }
             process.executableURL = URL(fileURLWithPath: codexPath)
+            // Login items can lack the PATH needed by the npm Codex launcher to find Node.
+            var environment = ProcessInfo.processInfo.environment
+            environment["PATH"] = (codexPaths.map { URL(fileURLWithPath: $0).deletingLastPathComponent().path } + [environment["PATH"] ?? "/usr/bin:/bin:/usr/sbin:/sbin"]).joined(separator: ":")
+            process.environment = environment
             process.arguments = ["app-server"]
             process.standardOutput = output; process.standardInput = input; process.standardError = FileHandle.nullDevice
             do {
@@ -85,7 +89,8 @@ public enum UsageReader {
             return ProviderUsage(name: old.name, weekly: old.weekly, session: old.session, fetchedAt: old.fetchedAt, message: message)
         }
         if let data = defaults.data(forKey: "claudeUsage"), let old = try? JSONDecoder().decode(ProviderUsage.self, from: data),
-           CacheIdentity.cacheIsFresh(stored: defaults.string(forKey: "claudeIdentity"), current: fingerprint, fetchedAt: old.fetchedAt, now: Date()) {
+           CacheIdentity.cacheIsFresh(stored: defaults.string(forKey: "claudeIdentity"), current: fingerprint, fetchedAt: old.fetchedAt,
+                                      resetAt: [old.weekly?.reset, old.session?.reset].compactMap { $0 }.min(), now: Date()) {
             return old
         }
         if defaults.string(forKey: "claudeRetryIdentity") == nil {

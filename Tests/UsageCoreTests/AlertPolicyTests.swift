@@ -47,6 +47,7 @@ final class AlertPolicyTests: XCTestCase {
         XCTAssertFalse(CacheIdentity.retryApplies(stored: "a", current: "b", deadline: now.addingTimeInterval(60), now: now))
         XCTAssertFalse(CacheIdentity.retryApplies(stored: nil, current: "a", deadline: now.addingTimeInterval(60), now: now))
         XCTAssertTrue(CacheIdentity.cacheIsFresh(stored: "a", current: "a", fetchedAt: now.addingTimeInterval(-299), now: now))
+        XCTAssertFalse(CacheIdentity.cacheIsFresh(stored: "a", current: "a", fetchedAt: now.addingTimeInterval(-60), resetAt: now, now: now))
         XCTAssertFalse(CacheIdentity.cacheIsFresh(stored: "a", current: "a", fetchedAt: now.addingTimeInterval(-300), now: now))
         XCTAssertFalse(CacheIdentity.cacheIsFresh(stored: "a", current: "a", fetchedAt: now.addingTimeInterval(1), now: now))
         XCTAssertFalse(CacheIdentity.cacheIsFresh(stored: "a", current: "b", fetchedAt: now, now: now))
